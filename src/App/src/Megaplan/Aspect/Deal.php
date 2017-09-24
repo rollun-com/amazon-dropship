@@ -34,19 +34,11 @@ class Deal extends AspectAbstract
     ];
 
     /**
-     * Prepares data for request.
+     * {@inheritdoc}
      *
-     * Sends a request to the Megaplan to find a deal ID by amazon_order_id out.
-     * Then this ID is added to itemData.
-     *
-     * If there are two more deals with the same amazon_order_id it's an exception.
-     *
-     * TODO: I was made to create this method instead 'preCreate' because in the 'preCreate' I had no opportunity to change itemData.
-     *
-     * @param $itemData
-     * @throws InvalidArgumentException
+     * {@inheritdoc}
      */
-    protected function prepareItemData(&$itemData)
+    protected function preCreate($itemData, $rewriteIfExist = false)
     {
         $itemData = $this->mapItemData($itemData);
         $query = new Query();
@@ -58,23 +50,13 @@ class Deal extends AspectAbstract
         $result = $this->dataStore->query($query);
         if (count($result) > 1) {
             throw new InvalidArgumentException("There are \"" . count($result)
-                . "\" entities with OrderID=\"" . $itemData['amazon_order_id'] . "\"");
+                . "\" entities with OrderID=\"" . $itemData['Model'][$this->fieldsMap[static::AMAZON_ORDER_ID_KEY]] . "\"");
         }
         $result = current($result);
         if (isset($result['Id'])) {
             $itemData['Id'] = $result['Id'];
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * {@inheritdoc}
-     */
-    public function create($itemData, $rewriteIfExist = false)
-    {
-        $this->prepareItemData($itemData);
-        return parent::create($itemData, true);
+        return $itemData;
     }
 
     /**
