@@ -18,21 +18,19 @@
     "require": {
         "php": "^5.6 || ^7.0",
         "roave/security-advisories": "dev-master",
+        "rollun-com/rollun-api": "dev-megaplan-features",
+        "rollun-com/rollun-datastore": "^4.0",
+        "rollun-com/rollun-installer": "^3.0",
+        "rollun-com/rollun-logger": "^3.0.",
         "zendframework/zend-component-installer": "^1.0",
         "zendframework/zend-config-aggregator": "^0.2.0",
         "zendframework/zend-expressive": "^2.0.2",
         "zendframework/zend-expressive-helpers": "^4.0",
-        "zendframework/zend-stdlib": "^3.1",
-        "zendframework/zend-servicemanager": "^3.3",
         "zendframework/zend-expressive-zendrouter": "^2.0.1",
-        "zendframework/zend-serializer": "^2.8",
         "zendframework/zend-http": "^2.5",
-        "rollun-com/rollun-installer": "^3.0",
-        "rollun-com/rollun-datastore": "^4.0",
-        "rollun-com/rollun-logger": "^3.0.",
-        "rollun-com/rollun-api": "dev-megaplan-features",
-        "megaplan/simple_client": "dev-master",
-        "symfony/console": "^3.0"
+        "zendframework/zend-serializer": "^2.8",
+        "zendframework/zend-servicemanager": "^3.3",
+        "zendframework/zend-stdlib": "^3.1"
     },
     "require-dev": {
         "mockery/mockery": "dev-master",
@@ -57,8 +55,8 @@
     },
     "extra": {
         "zf": {
-            "component": "rollun\\application\\App\\ConfigProvider",
-            "config-provider": "rollun\\application\\App\\ConfigProvider\\ConfigProvider"
+            "component": "rollun\\application\\App",
+            "config-provider": "rollun\\application\\App\\ConfigProvider"
         }
     },
     "scripts": {

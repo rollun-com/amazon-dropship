@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\application\App;
+namespace rollun\application\App\Megaplan;
 
 /**
  * The configuration provider for the App module
