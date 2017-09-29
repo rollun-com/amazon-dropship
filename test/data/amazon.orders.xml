@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<ListOrdersResponse xmlns="https://mws.amazonservices.com/Orders/2013-09-01">
+    <ListOrdersResult>
+        <Orders>
+            <Order>
+                <LatestShipDate>2017-09-28T20:59:57Z</LatestShipDate>
+                <OrderType>StandardOrder</OrderType>
+                <PurchaseDate>2017-09-28T05:30:28Z</PurchaseDate>
+                <AmazonOrderId>114-9270757-6876200</AmazonOrderId>
+                <BuyerEmail>cmz3vg12xv0p86g@marketplace.amazon.com</BuyerEmail>
+                <IsReplacementOrder>false</IsReplacementOrder>
+                <LastUpdateDate>2017-09-28T21:00:57Z</LastUpdateDate>
+                <NumberOfItemsShipped>1</NumberOfItemsShipped>
+                <ShipServiceLevel>SecondDay</ShipServiceLevel>
+                <OrderStatus>Shipped</OrderStatus>
+                <SalesChannel>Amazon.com</SalesChannel>
+                <IsBusinessOrder>false</IsBusinessOrder>
+                <NumberOfItemsUnshipped>0</NumberOfItemsUnshipped>
+                <PaymentMethodDetails>
+                    <PaymentMethodDetail>Standard</PaymentMethodDetail>
+                </PaymentMethodDetails>
+                <BuyerName>Ashlin Aronin</BuyerName>
+                <OrderTotal>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>23.99</Amount>
+                </OrderTotal>
+                <IsPremiumOrder>false</IsPremiumOrder>
+                <EarliestShipDate>2017-09-28T20:59:57Z</EarliestShipDate>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <FulfillmentChannel>AFN</FulfillmentChannel>
+                <PaymentMethod>Other</PaymentMethod>
+                <ShippingAddress>
+                    <StateOrRegion>OR</StateOrRegion>
+                    <City>Portland</City>
+                    <CountryCode>US</CountryCode>
+                    <PostalCode>97211</PostalCode>
+                    <Name>Ashlin Aronin</Name>
+                    <AddressLine1>4125 NE 13th Ave</AddressLine1>
+                </ShippingAddress>
+                <IsPrime>false</IsPrime>
+                <ShipmentServiceLevelCategory>SecondDay</ShipmentServiceLevelCategory>
+                <SellerOrderId>114-9270757-6876200</SellerOrderId>
+            </Order>
+        </Orders>
+        <LastUpdatedBefore>2017-09-29T19:40:57Z</LastUpdatedBefore>
+    </ListOrdersResult>
+    <ResponseMetadata>
+        <RequestId>e748ea32-8232-42b7-81e4-54d2fbcf0c14</RequestId>
+    </ResponseMetadata>
+</ListOrdersResponse>

@@ -13,6 +13,7 @@ $cacheConfig = [
 $aggregator = new ConfigAggregator([
     \rollun\application\App\Megaplan\ConfigProvider::class,
     \rollun\application\App\Price\ConfigProvider::class,
+    \rollun\application\App\Amazon\ConfigProvider::class,
     \Zend\Session\ConfigProvider::class,
     \Zend\Filter\ConfigProvider::class,
     \Zend\Cache\ConfigProvider::class,

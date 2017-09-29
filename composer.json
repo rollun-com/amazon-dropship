@@ -17,8 +17,11 @@
     "homepage": "https://github.com/ittech227/amazon-dropship",
     "require": {
         "php": "^5.6 || ^7.0",
+        "cpigroup/php-amazon-mws": "^1.3",
+        "megaplan/simple_client": "dev-master",
         "roave/security-advisories": "dev-master",
         "rollun-com/rollun-api": "dev-megaplan-features",
+        "rollun-com/rollun-callback": "^4.1",
         "rollun-com/rollun-datastore": "^4.0",
         "rollun-com/rollun-installer": "^3.0",
         "rollun-com/rollun-logger": "^3.0.",
@@ -56,7 +59,11 @@
     "extra": {
         "zf": {
             "component": "rollun\\application\\App",
-            "config-provider": "rollun\\application\\App\\ConfigProvider"
+            "config-provider": [
+                "rollun\\application\\App\\Megaplan\\ConfigProvider",
+                "\\rollun\\application\\App\\Price\\ConfigProvider",
+                "\\rollun\\application\\App\\Amazon\\ConfigProvider"
+            ]
         }
     },
     "scripts": {

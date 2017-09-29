@@ -28,6 +28,11 @@ class RockyMountainFactory implements FactoryInterface
     const PRICE_LIST_FILE_NAME_KEY = 'filename';
     const PRICE_LIST_PARSER_DATASTORE_KEY = 'dataStore';
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config');
