@@ -21,6 +21,8 @@ class ConfigProvider
         return [
             'dependencies' => $this->getDependencies(),
             OrderClientFactory::ORDER_CLIENT_KEY => $this->getAmazonOrderClient(),
+            'callback' => $this->getCallback(),
+            'interrupt' => $this->getInterrupt(),
         ];
     }
 
@@ -57,6 +59,36 @@ class ConfigProvider
                 OrderClientFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
                     "amazon/client/amazon-config.php",
             ]
+        ];
+    }
+
+    public function getCallback()
+    {
+        return [
+            'hourly_multiplexer' => [
+                'class' => 'rollun\callback\Callback\Multiplexer',
+                'interrupters' => [
+                    OrderClient::class,
+                ],
+            ],
+        ];
+    }
+
+    public function getInterrupt()
+    {
+        return [
+            'cron' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'hourly_multiplexer',
+            ],
+//            'interrupt_cron_sec_ticker' => [
+//                'class' => 'rollun\callback\Callback\Interruptor\Process',
+//                'callbackService' => 'cron_sec_ticker',
+//            ],
+//            'interrupt_sec_multiplexer' => [
+//                'class' => 'rollun\callback\Callback\Interruptor\Process',
+//                'callbackService' => 'sec_multiplexer',
+//            ],
         ];
     }
 }
