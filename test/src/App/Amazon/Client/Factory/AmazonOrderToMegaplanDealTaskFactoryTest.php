@@ -3,10 +3,10 @@
 namespace rollun\test\application\App\Amazon\Client\Factory;
 
 use Interop\Container\ContainerInterface;
-use rollun\application\App\Amazon\Client\Factory\OrderClientFactory;
-use rollun\application\App\Amazon\Client\OrderClient;
+use rollun\application\App\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
+use rollun\application\App\Amazon\Client\AmazonOrderToMegaplanDealTask;
 
-class OrderClientFactoryTest extends \PHPUnit_Framework_TestCase
+class AmazonOrderToMegaplanDealTaskFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ContainerInterface */
     protected $container;
@@ -19,9 +19,9 @@ class OrderClientFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function test_orderClientFactory_shouldReturnCreatedInstance()
     {
-        $instance = $this->container->get(OrderClientFactory::ORDER_CLIENT_KEY);
+        $instance = $this->container->get(AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY);
         $this->assertInstanceOf(
-            OrderClient::class, $instance
+            AmazonOrderToMegaplanDealTask::class, $instance
         );
     }
 }

@@ -2,9 +2,10 @@
 
 namespace rollun\application\App\Amazon;
 
-use rollun\application\App\Amazon\Client\Factory\OrderClientFactory;
+use rollun\application\App\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
+use rollun\datastore\DataStore\Memory;
 use rollun\installer\Command;
-use rollun\application\App\Amazon\Client\OrderClient;
+use rollun\application\App\Amazon\Client\AmazonOrderToMegaplanDealTask;
 
 class ConfigProvider
 {
@@ -20,9 +21,14 @@ class ConfigProvider
     {
         return [
             'dependencies' => $this->getDependencies(),
-            OrderClientFactory::ORDER_CLIENT_KEY => $this->getAmazonOrderClient(),
+            AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => $this->getAmazonOrderClient(),
             'callback' => $this->getCallback(),
             'interrupt' => $this->getInterrupt(),
+            'dataStore' => [
+                'tracking_number_dataStore' => [
+                    'class' => Memory::class,
+                ],
+            ],
         ];
     }
 
@@ -37,10 +43,10 @@ class ConfigProvider
             'invokables' => [
             ],
             'factories'  => [
-                OrderClient::class => OrderClientFactory::class,
+                AmazonOrderToMegaplanDealTask::class => AmazonOrderToMegaplanDealTaskFactory::class,
             ],
             'aliases' => [
-                OrderClientFactory::ORDER_CLIENT_KEY => OrderClient::class,
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
             ],
         ];
     }
@@ -53,27 +59,39 @@ class ConfigProvider
     public function getAmazonOrderClient()
     {
         return [
-            OrderClientFactory::ORDER_CLIENT_KEY => [
-                OrderClientFactory::ORDER_CLIENT_CLASS_KEY => OrderClient::class,
-                OrderClientFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
-                OrderClientFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
+            AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => [
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CLASS_KEY => AmazonOrderToMegaplanDealTask::class,
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
                     "amazon/client/amazon-config.php",
+                AmazonOrderToMegaplanDealTaskFactory::MEGAPLAN_DATASTORE_ASPECT_KEY => 'megaplan_dataStore_aspect',
+                AmazonOrderToMegaplanDealTaskFactory::TRACKING_NUMBER_DATASTORE_KEY => 'tracking_number_dataStore',
             ]
         ];
     }
 
+    /**
+     * Returns cron hourly task config
+     *
+     * @return array
+     */
     public function getCallback()
     {
         return [
             'hourly_multiplexer' => [
                 'class' => 'rollun\callback\Callback\Multiplexer',
                 'interrupters' => [
-                    OrderClient::class,
+                    AmazonOrderToMegaplanDealTask::class,
                 ],
             ],
         ];
     }
 
+    /**
+     * Returns cron interrupter config
+     *
+     * @return array
+     */
     public function getInterrupt()
     {
         return [
@@ -81,14 +99,6 @@ class ConfigProvider
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
                 'callbackService' => 'hourly_multiplexer',
             ],
-//            'interrupt_cron_sec_ticker' => [
-//                'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => 'cron_sec_ticker',
-//            ],
-//            'interrupt_sec_multiplexer' => [
-//                'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => 'sec_multiplexer',
-//            ],
         ];
     }
 }

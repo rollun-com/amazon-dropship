@@ -2,7 +2,7 @@
 
 namespace rollun\application\App\Amazon\Client;
 
-class OrderClientException extends \Exception
+class AmazonOrderTaskException extends \Exception
 {
 
 }
