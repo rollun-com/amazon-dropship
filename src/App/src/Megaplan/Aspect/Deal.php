@@ -3,6 +3,7 @@
 namespace rollun\application\App\Megaplan\Aspect;
 
 use rollun\api\Api\Megaplan\Exception\InvalidArgumentException;
+use rollun\application\App\Megaplan\MegaplanFieldProviderInterface;
 use rollun\datastore\DataStore\Aspect\AspectAbstract;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator;
 use Xiag\Rql\Parser\Query;
@@ -19,7 +20,7 @@ use Xiag\Rql\Parser\Query;
  *
  * @package rollun\application\Megaplan\Aspect
  */
-class Deal extends AspectAbstract
+class Deal extends AspectAbstract implements MegaplanFieldProviderInterface
 {
     const AMAZON_ORDER_ID_KEY = 'amazon_order_id';
     const PAYMENTS_DATE_KEY = 'payments_date';
@@ -110,5 +111,18 @@ class Deal extends AspectAbstract
             throw new InvalidArgumentException("Format of specified data is wrong");
         }
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
+    public function getMappedField($fieldName)
+    {
+        if (isset($this->fieldsMap[$fieldName])) {
+            return $this->fieldsMap[$fieldName];
+        }
+        return null;
     }
 }

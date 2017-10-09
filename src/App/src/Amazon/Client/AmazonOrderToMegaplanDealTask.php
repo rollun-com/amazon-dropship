@@ -10,10 +10,13 @@ use rollun\application\App\Megaplan\Aspect\Deal;
 use rollun\logger\Logger;
 use Xiag\Rql\Parser\Query;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator;
+use Xiag\Rql\Parser\Node\Query\LogicOperator;
 
 class AmazonOrderToMegaplanDealTask implements InterruptorInterface
 {
     const TRACKING_DATASTORE_INVOICE_NUMBER_KEY = 'invoice_number';
+
+    const WAITING_FOR_SHIPPING_STATUS = 100;
 
     /** @var AmazonOrderList */
     protected $amazonOrderList;
@@ -65,26 +68,23 @@ class AmazonOrderToMegaplanDealTask implements InterruptorInterface
         try {
             $orderList = $this->getOrderList($value);
         } catch (\Exception $e) {
-            if ($this->logger) {
-                $this->logger->log('critical', "Item wasn't created for reason: " . $e->getMessage());
-            }
+            $this->log('critical', "Item wasn't created for reason: " . $e->getMessage());
             return;
         }
         foreach ($orderList as $order) {
             /** AmazonOrder $order */
             try {
-                $item = $this->megaplanDataStore->create($this->fetchMegaplanItemData($order));
+                $item = $this->megaplanDataStore->create($this->fetchMegaplanItemData($order), true);
                 $message = "Item was created: " . print_r($item, 1);
                 $logLevel = 'info';
             } catch (\Exception $e) {
                 $message = "Item wasn't created for reason: " . $e->getMessage();
                 $logLevel = 'critical';
             } finally {
-                if ($this->logger) {
-                    $this->logger->log($logLevel, $message);
-                }
+                $this->log($logLevel, $message);
             }
         }
+        $this->findTrackingNumbersAndSetThemToMegaplanDeals();
     }
 
     /**
@@ -186,6 +186,56 @@ class AmazonOrderToMegaplanDealTask implements InterruptorInterface
     }
 
     /**
+     * Gets tracking numbers for all deals in status "Waiting for shipping" where there is no tracking number.
+     */
+    public function findTrackingNumbersAndSetThemToMegaplanDeals()
+    {
+        $query = new Query();
+        $andNode = new LogicOperator\AndNode([
+            new ScalarOperator\EqNode('Status', static::WAITING_FOR_SHIPPING_STATUS),
+            new ScalarOperator\EqNode('Category1000060CustomFieldTrekNomer', null),
+        ]);
+        $query->setQuery($andNode);
+        $deals = $this->megaplanDataStore->query($query);
+        switch (count($deals)) {
+            case 0:
+                $logMessage = "No deals were found";
+                break;
+            case 1:
+                $logMessage = "One deal was found";
+                break;
+            default:
+                $logMessage = count($deals) . " deals were found";
+                break;
+        }
+        $this->log('info', $logMessage);
+
+        foreach($deals as $deal) {
+            $amazonOrderId = $deal[$this->megaplanDataStore->getMappedField(Deal::AMAZON_ORDER_ID_KEY)];
+            try {
+                $trackingNumber = $this->getTrackingNumber($amazonOrderId);
+                if ($trackingNumber) {
+                    $megaplanItemData = [
+                        Deal::AMAZON_ORDER_ID_KEY => $amazonOrderId,
+                        Deal::TRACKING_NUMBER_KEY => $trackingNumber,
+                    ];
+                    $this->megaplanDataStore->create($megaplanItemData, true);
+                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" (Megaplan deal Id=\"{$deal['Id']}\") was found: {$trackingNumber}.";
+                    $logLevel = 'info';
+                } else {
+                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" (Megaplan deal Id=\"{$deal['Id']}\") wasn't found.";
+                    $logLevel = 'info';
+                }
+            } catch (\Exception $e) {
+                $logMessage = "Can't find and update a tracking number for the next reason: " . $e->getMessage();
+                $logLevel = 'critical';
+            } finally {
+                $this->log($logLevel, $logMessage);
+            }
+        }
+    }
+
+    /**
      * Just relaying mock mode and mock-file to the original object. This is used it tests
      *
      * @param bool|true $b
@@ -195,5 +245,18 @@ class AmazonOrderToMegaplanDealTask implements InterruptorInterface
     public function setMock($b = true, $files = null)
     {
         $this->amazonOrderList->setMock($b, $files);
+    }
+
+    /**
+     * Just relays all messages to the logger if it is set.
+     *
+     * @param $logLevel
+     * @param $message
+     */
+    protected function log($logLevel, $message)
+    {
+        if ($this->logger) {
+            $this->logger->log($logLevel, $message);
+        }
     }
 }
