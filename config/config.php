@@ -11,18 +11,24 @@ $cacheConfig = [
 ];
 
 $aggregator = new ConfigAggregator([
-    \rollun\application\App\Megaplan\ConfigProvider::class,
-    \rollun\application\App\Price\ConfigProvider::class,
-    \rollun\application\App\Amazon\ConfigProvider::class,
-    \Zend\Session\ConfigProvider::class,
+    \rollun\amazonDropship\Megaplan\ConfigProvider::class,
+    \rollun\parser\ConfigProvider::class,
+    \rollun\amazonDropship\Amazon\ConfigProvider::class,
+    \Zend\Serializer\ConfigProvider::class,
+    \Zend\Db\ConfigProvider::class,
+    \Zend\Validator\ConfigProvider::class,
+    \Zend\I18n\ConfigProvider::class,
     \Zend\Filter\ConfigProvider::class,
     \Zend\Cache\ConfigProvider::class,
-    \Zend\Db\ConfigProvider::class,
-    \Zend\Serializer\ConfigProvider::class,
-    \Zend\Router\ConfigProvider::class,
-    \Zend\Validator\ConfigProvider::class,
+    \Zend\Mail\ConfigProvider::class,
+    \Zend\Session\ConfigProvider::class,
+    \rollun\test\ConfigProvider::class,
+    \rollun\actionrender\ConfigProvider::class,
     // Include cache configuration
     new ArrayProvider($cacheConfig),
+
+    // Default App module config
+
     // Load application config in a pre-defined order in such a way that local settings
     // overwrite global settings. (Loaded as first to last):
     //   - `global.php`

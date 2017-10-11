@@ -1,89 +1,113 @@
 {
-    "name": "rollun-com/amazon-dropship",
-    "description": "Provides an interface for creating / updating deals in Megaplan based on data from the Amazon.com",
-    "type": "library",
-    "license": "GPL-3.0",
-    "config": {
-        "sort-packages": true
+  "name": "rollun-com/rollun-skeleton",
+  "description": "Skeleton for app or lib",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "type": "project",
+  "authors": [
+    {
+      "name": "avz-cmf",
+      "email": "email@example.com"
     },
-    "keywords": [
-        "php",
-        "rest",
-        "data store",
-        "middleware",
-        "amazon",
-        "megaplan"
-    ],
-    "homepage": "https://github.com/ittech227/amazon-dropship",
-    "require": {
-        "php": "^5.6 || ^7.0",
-        "cpigroup/php-amazon-mws": "^1.3",
-        "megaplan/simple_client": "dev-master",
-        "roave/security-advisories": "dev-master",
-        "rollun-com/rollun-api": "dev-megaplan-features",
-        "rollun-com/rollun-callback": "^4.1",
-        "rollun-com/rollun-datastore": "^4.0",
-        "rollun-com/rollun-installer": "^3.0",
-        "rollun-com/rollun-logger": "^3.0.",
-        "zendframework/zend-component-installer": "^1.0",
-        "zendframework/zend-config-aggregator": "^0.2.0",
-        "zendframework/zend-expressive": "^2.0.2",
-        "zendframework/zend-expressive-helpers": "^4.0",
-        "zendframework/zend-expressive-zendrouter": "^2.0.1",
-        "zendframework/zend-http": "^2.5",
-        "zendframework/zend-serializer": "^2.8",
-        "zendframework/zend-servicemanager": "^3.3",
-        "zendframework/zend-stdlib": "^3.1"
-    },
-    "require-dev": {
-        "mockery/mockery": "dev-master",
-        "phpunit/phpunit": "^6.0.8 || ^5.7.15",
-        "zendframework/zend-expressive-tooling": "^0.4.4"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/rollun-com/rollun-api"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "rollun\\application\\App\\": "src/App/src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "rollun\\test\\application\\": "test/src"
-        }
-    },
-    "extra": {
-        "zf": {
-            "component": "rollun\\application\\App",
-            "config-provider": [
-                "rollun\\application\\App\\Megaplan\\ConfigProvider",
-                "\\rollun\\application\\App\\Price\\ConfigProvider",
-                "\\rollun\\application\\App\\Amazon\\ConfigProvider"
-            ]
-        }
-    },
-    "scripts": {
-        "post-create-project-cmd": [
-            "@development-enable"
-        ],
-        "development-disable": "zf-development-mode disable",
-        "development-enable": "zf-development-mode enable",
-        "development-status": "zf-development-mode status",
-        "check": [
-            "@cs-check",
-            "@test"
-        ],
-        "clear-config-cache": "php bin/clear-config-cache.php",
-        "cs-check": "phpcs",
-        "cs-fix": "phpcbf",
-        "serve": "php -S 0.0.0.0:8080 -t public public/index.php",
-        "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
-        "upload-coverage": "coveralls -v",
-        "lib": "rollun\\installer\\Command::command"
+    {
+      "name": "victorynox",
+      "email": "it.proffesor02@gmail.com"
     }
+  ],
+  "extra": {
+    "asset-installer-paths": {
+      "npm-asset-library": "public/assets/js"
+    },
+    "zf": [
+      {
+        "component": "\\rollun\\amazonDropship",
+        "config-provider": [
+          "\\rollun\\amazonDropship\\Megaplan\\ConfigProvider",
+          "\\rollun\\parser\\ConfigProvider",
+          "\\rollun\\amazonDropship\\Amazon\\ConfigProvider"
+        ]
+      },
+      {
+        "component": "\\rollun\\parser",
+        "config-provider": [
+          "\\rollun\\parser\\ConfigProvider"
+        ]
+      }
+    ]
+  },
+  "require": {
+    "php": "^5.6 || ^7.0",
+    "roave/security-advisories": "dev-master",
+    "zendframework/zend-component-installer": "^1.0 || ^0.7.0",
+    "zendframework/zend-config-aggregator": "^0.2.0",
+    "zendframework/zend-expressive": "^2.0.2",
+    "zendframework/zend-expressive-helpers": "^4.0",
+    "zendframework/zend-stdlib": "^3.1",
+    "zendframework/zend-servicemanager": "^3.3",
+    "zendframework/zend-expressive-fastroute": "^2.0",
+    "zendframework/zend-expressive-zendviewrenderer": "^1.4",
+    "zendframework/zend-db": "2.8.2",
+    "psr/log": "^1.0",
+    "rollun-com/rollun-logger": "^3.0",
+    "rollun-com/rollun-installer": "^3.0",
+    "rollun-com/rollun-actionrender": "^5.0",
+    "rollun-com/rollun-dic": "^2.0",
+    "rollun-com/rollun-datastore": "^4.0",
+    "rollun-com/rollun-viewer": "dev-master",
+    "rollun-com/rollun-callback": "^4.0",
+    "rollun-com/rollun-api": "^3.0",
+    "zendframework/zend-http": "^2.5",
+    "rollun-com/rollun-permission": "^2.0",
+    "zendframework/zend-i18n": "^2.7",
+    "cpigroup/php-amazon-mws": "^1.3",
+    "megaplan/simple_client": "dev-master"
+  },
+  "require-dev": {
+    "mockery/mockery": "dev-master",
+    "phpunit/phpunit": "^6.0.8 || ^5.7.15",
+    "squizlabs/php_codesniffer": "^2.8.1",
+    "zfcampus/zf-development-mode": "^3.1",
+    "zendframework/zend-expressive-tooling": "^0.4.1",
+    "filp/whoops": "^2.1.7"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/rollun-com/rollun-api"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "rollun\\test\\": "src/Test/src",
+      "rollun\\amazonDropship\\": "src/",
+      "rollun\\parser\\": "src/Parser/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "rollun\\test\\skeleton\\": "test/App",
+      "rollun\\test\\amazonDropship\\": "test/src",
+      "rollun\\test\\parser\\": "test/src/Parser"
+    }
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "@development-enable"
+    ],
+    "development-disable": "zf-development-mode disable",
+    "development-enable": "zf-development-mode enable",
+    "development-status": "zf-development-mode status",
+    "check": [
+      "@cs-check",
+      "@test"
+    ],
+    "clear-config-cache": "php bin/clear-config-cache.php",
+    "cs-check": "phpcs",
+    "cs-fix": "phpcbf",
+    "serve": "php -S 0.0.0.0:8080 -t public public/index.php",
+    "test": "phpunit --colors=always",
+    "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+    "upload-coverage": "coveralls -v",
+    "lib": "rollun\\installer\\Command::command"
+  }
 }
