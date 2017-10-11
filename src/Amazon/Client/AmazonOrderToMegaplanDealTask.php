@@ -4,7 +4,7 @@ namespace rollun\amazonDropship\Amazon\Client;
 
 use AmazonOrderList;
 use AmazonOrder;
-use rollun\callback\Callback\Interruptor\InterruptorInterface;
+use rollun\callback\Callback\CallbackInterface;
 use rollun\datastore\DataStore\Interfaces\DataStoresInterface;
 use rollun\amazonDropship\Megaplan\Aspect\Deal;
 use rollun\logger\Logger;
@@ -12,7 +12,7 @@ use Xiag\Rql\Parser\Query;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator;
 use Xiag\Rql\Parser\Node\Query\LogicOperator;
 
-class AmazonOrderToMegaplanDealTask implements InterruptorInterface
+class AmazonOrderToMegaplanDealTask implements CallbackInterface
 {
     const TRACKING_DATASTORE_INVOICE_NUMBER_KEY = 'invoice_number';
 
