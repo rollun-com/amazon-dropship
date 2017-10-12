@@ -8,8 +8,8 @@ use rollun\installer\Command;
 use rollun\amazonDropship\Amazon\Client\AmazonOrderToMegaplanDealTask;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\logger\Logger;
-use rollun\amazonDropship\Amazon\Callback\TaskCallback;
-use rollun\amazonDropship\Amazon\Callback\Factory\TaskCallbackFactory;
+use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Amazon\Callback\Factory\AmazonOrderTaskCallbackFactory;
 
 class ConfigProvider
 {
@@ -33,6 +33,11 @@ class ConfigProvider
                     'class' => Memory::class,
                 ],
             ],
+            AmazonOrderTaskCallback::class => [
+                'callback' => 'taskAmazonOrder',
+                'mode' => 'Modified',
+                'since_datetime' => '-1 Hour',
+            ],
         ];
     }
 
@@ -48,7 +53,7 @@ class ConfigProvider
             ],
             'factories'  => [
                 AmazonOrderToMegaplanDealTask::class => AmazonOrderToMegaplanDealTaskFactory::class,
-                TaskCallback::class => TaskCallbackFactory::class,
+                AmazonOrderTaskCallback::class => AmazonOrderTaskCallbackFactory::class,
             ],
             'aliases' => [
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
@@ -120,7 +125,7 @@ class ConfigProvider
         return [
             'AmazonOrderToMegaplanDealTask_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => TaskCallback::class,
+                'callbackService' => AmazonOrderTaskCallback::class,
             ],
             'hourly_multiplexer_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',

@@ -2,6 +2,7 @@
 
 namespace rollun\amazonDropship\Megaplan\Aspect;
 
+use DateTime;
 use rollun\api\Api\Megaplan\Exception\InvalidArgumentException;
 use rollun\amazonDropship\Megaplan\MegaplanFieldProviderInterface;
 use rollun\datastore\DataStore\Aspect\AspectAbstract;
@@ -82,7 +83,7 @@ class Deal extends AspectAbstract implements MegaplanFieldProviderInterface
         // Checks data format
         $this->checkIncomingData($itemData);
         // Convert the data value from a timestamp to a string view of the data.
-        $itemData[static::PAYMENTS_DATE_KEY] = date('Y-m-d', $itemData[static::PAYMENTS_DATE_KEY]);
+        $itemData[static::PAYMENTS_DATE_KEY] = (new DateTime($itemData[static::PAYMENTS_DATE_KEY]))->format('Y-m-d');
         // Wraps data to the 'Model' field (it's requirement of the Megaplan)
         return ['Model' => array_combine(array_values($this->fieldsMap), $itemData)];
     }
@@ -102,7 +103,7 @@ class Deal extends AspectAbstract implements MegaplanFieldProviderInterface
     {
         $check = (
             isset($itemData[static::AMAZON_ORDER_ID_KEY]) &&
-            isset($itemData[static::PAYMENTS_DATE_KEY]) && date('Y-m-d', $itemData[static::PAYMENTS_DATE_KEY]) &&
+            isset($itemData[static::PAYMENTS_DATE_KEY]) && (new DateTime($itemData[static::PAYMENTS_DATE_KEY]))->format('Y-m-d') &&
             array_key_exists(static::MERCHANT_ORDER_ID_KEY, $itemData) &&
             array_key_exists(static::TRACKING_NUMBER_KEY, $itemData) &&
             count($itemData) == 4

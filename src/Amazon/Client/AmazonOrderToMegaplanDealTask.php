@@ -149,6 +149,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface
             Deal::AMAZON_ORDER_ID_KEY => $order->getAmazonOrderId(),
             Deal::PAYMENTS_DATE_KEY => $order->getPurchaseDate(),
             Deal::MERCHANT_ORDER_ID_KEY => $order->getSellerOrderId(),
+            Deal::TRACKING_NUMBER_KEY => null,
         ];
         if ('Shipped' == $order->getOrderStatus()) {
             $megaplanItemData[Deal::TRACKING_NUMBER_KEY] = $this->getTrackingNumber($order->getAmazonOrderId());
@@ -173,16 +174,17 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface
         $items = $this->trackingNumberDataStore->query($query);
         switch (count($items)) {
             case 0:
-                throw new AmazonOrderTaskException("There is no order with specified tracking number");
+                $trackingNumber = null;
                 break;
             case 1:
                 $item = array_shift($items);
+                $trackingNumber = $item['tracking_number'];
                 break;
             default:
                 throw new AmazonOrderTaskException("There are a few orders with the same tracking number");
                 break;
         }
-        return $item['tracking_number'];
+        return $trackingNumber;
     }
 
     /**
