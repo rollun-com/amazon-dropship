@@ -35,4 +35,10 @@ class AmazonOrderTaskCallback extends Callback
         file_put_contents($filename, ++$executionsCount);
         return false;
     }
+
+    public function __sleep()
+    {
+        $classPropertiesToSerialize = parent::__sleep();
+        return array_merge($classPropertiesToSerialize, ['value']);
+    }
 }
