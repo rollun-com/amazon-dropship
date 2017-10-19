@@ -7,12 +7,13 @@ use AmazonOrder;
 use rollun\callback\Callback\CallbackInterface;
 use rollun\datastore\DataStore\Interfaces\DataStoresInterface;
 use rollun\amazonDropship\Megaplan\Aspect\Deal;
+use rollun\dic\InsideConstruct;
 use rollun\logger\Logger;
 use Xiag\Rql\Parser\Query;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator;
 use Xiag\Rql\Parser\Node\Query\LogicOperator;
 
-class AmazonOrderToMegaplanDealTask implements CallbackInterface
+class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
 {
     const TRACKING_DATASTORE_INVOICE_NUMBER_KEY = 'invoice_number';
 
@@ -38,16 +39,13 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface
      * @param Logger $logger
      */
     public function __construct(
-        AmazonOrderList $amazonOrderList,
-        DataStoresInterface $megaplanDataStore,
-        DataStoresInterface $trackingNumberDataStore,
+        AmazonOrderList $amazonOrderList = null,
+        DataStoresInterface $megaplanDataStore = null,
+        DataStoresInterface $trackingNumberDataStore = null,
         Logger $logger = null
     )
     {
-        $this->amazonOrderList = $amazonOrderList;
-        $this->trackingNumberDataStore = $trackingNumberDataStore;
-        $this->megaplanDataStore = $megaplanDataStore;
-        $this->logger = $logger;
+        InsideConstruct::setConstructParams();
     }
 
     /**
@@ -260,5 +258,25 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface
         if ($this->logger) {
             $this->logger->log($logLevel, $message);
         }
+    }
+
+    /**
+     * Returns an empty string because during unserializing the InsideConstruct will create all the necessary parameters/services
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return "";
+    }
+
+    /**
+     * Just calls the constructor and InsideConstruct will create all the necessary parameters/services
+     *
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        $this->__construct();
     }
 }

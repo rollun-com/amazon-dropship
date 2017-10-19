@@ -2,6 +2,8 @@
 
 namespace rollun\amazonDropship\Amazon;
 
+use AmazonOrderList;
+use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderListFactory;
 use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
 use rollun\datastore\DataStore\Memory;
 use rollun\installer\Command;
@@ -38,6 +40,11 @@ class ConfigProvider
                 'mode' => 'Modified',
                 'since_datetime' => '-1 Hour',
             ],
+            AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY => [
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
+                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
+                    "amazon/client/amazon-config.php",
+            ],
         ];
     }
 
@@ -54,10 +61,14 @@ class ConfigProvider
             'factories'  => [
                 AmazonOrderToMegaplanDealTask::class => AmazonOrderToMegaplanDealTaskFactory::class,
                 AmazonOrderTaskCallback::class => AmazonOrderTaskCallbackFactory::class,
+                AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY => AmazonOrderListFactory::class,
             ],
             'aliases' => [
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
                 'taskAmazonOrder' => AmazonOrderToMegaplanDealTask::class,
+                'amazonOrderList' => AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY,
+                'megaplanDataStore' => 'megaplan_deal_dataStore_service',
+                'trackingNumberDataStore' => 'tracking_number_dataStore',
             ],
         ];
     }
@@ -72,13 +83,11 @@ class ConfigProvider
         return [
             AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => [
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CLASS_KEY => AmazonOrderToMegaplanDealTask::class,
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
-                    "amazon/client/amazon-config.php",
+
                 AmazonOrderToMegaplanDealTaskFactory::MEGAPLAN_DATASTORE_ASPECT_KEY => 'megaplan_dataStore_aspect',
                 AmazonOrderToMegaplanDealTaskFactory::TRACKING_NUMBER_DATASTORE_KEY => 'tracking_number_dataStore',
                 'logger' => Logger::class,
-            ]
+            ],
         ];
     }
 
@@ -125,7 +134,8 @@ class ConfigProvider
         return [
             'AmazonOrderToMegaplanDealTask_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => AmazonOrderTaskCallback::class,
+//                'callbackService' => AmazonOrderTaskCallback::class,
+                'callbackService' => 'min_multiplexer',
             ],
             'hourly_multiplexer_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
