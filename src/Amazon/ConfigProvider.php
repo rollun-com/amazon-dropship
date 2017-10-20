@@ -5,7 +5,7 @@ namespace rollun\amazonDropship\Amazon;
 use AmazonOrderList;
 use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderListFactory;
 use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
-use rollun\datastore\DataStore\Memory;
+use rollun\datastore\DataStore\CsvBase;
 use rollun\installer\Command;
 use rollun\amazonDropship\Amazon\Client\AmazonOrderToMegaplanDealTask;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
@@ -32,17 +32,24 @@ class ConfigProvider
             'interrupt' => $this->getInterrupt(),
             'dataStore' => [
                 'tracking_number_dataStore' => [
-                    'class' => Memory::class,
+                    'class' => CsvBase::class,
+                    'filename' => Command::getDataDir() . 'orderHistory.csv',
+                    'delimeter' => ';',
                 ],
             ],
+            // Service descriptions
             AmazonOrderTaskCallback::class => [
                 'callback' => 'taskAmazonOrder',
                 'mode' => 'Modified',
                 'since_datetime' => '-1 Hour',
+                'schedule' => [
+                    'hours' => ['*'],
+                    'minutes' => [0],
+                ],
             ],
             AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY => [
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
+                AmazonOrderListFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
+                AmazonOrderListFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
                     "amazon/client/amazon-config.php",
             ],
         ];
@@ -67,8 +74,9 @@ class ConfigProvider
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
                 'taskAmazonOrder' => AmazonOrderToMegaplanDealTask::class,
                 'amazonOrderList' => AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY,
-                'megaplanDataStore' => 'megaplan_deal_dataStore_service',
+                'megaplanDataStore' => 'megaplan_dataStore_aspect',
                 'trackingNumberDataStore' => 'tracking_number_dataStore',
+                'logger' => Logger::class,
             ],
         ];
     }
@@ -83,7 +91,6 @@ class ConfigProvider
         return [
             AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => [
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CLASS_KEY => AmazonOrderToMegaplanDealTask::class,
-
                 AmazonOrderToMegaplanDealTaskFactory::MEGAPLAN_DATASTORE_ASPECT_KEY => 'megaplan_dataStore_aspect',
                 AmazonOrderToMegaplanDealTaskFactory::TRACKING_NUMBER_DATASTORE_KEY => 'tracking_number_dataStore',
                 'logger' => Logger::class,
@@ -111,7 +118,7 @@ class ConfigProvider
             'cron_hourly_ticker' => [
                 'class' => 'rollun\callback\Callback\Ticker',
                 TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-                TickerAbstractFactory::KEY_TICK_DURATION => 60 * 60 * 1000, // one hour in microseconds
+//                TickerAbstractFactory::KEY_TICK_DURATION => 60 * 60 * 1000, // one hour in microseconds
                 TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
                 'callback' => 'hourly_multiplexer_interrupter',
             ],
@@ -134,8 +141,8 @@ class ConfigProvider
         return [
             'AmazonOrderToMegaplanDealTask_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => AmazonOrderTaskCallback::class,
-                'callbackService' => 'min_multiplexer',
+                'callbackService' => AmazonOrderTaskCallback::class,
+//                'callbackService' => 'min_multiplexer',
             ],
             'hourly_multiplexer_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',

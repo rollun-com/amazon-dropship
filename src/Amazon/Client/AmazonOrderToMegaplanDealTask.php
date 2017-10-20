@@ -69,6 +69,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
             $this->log('critical', "Item wasn't created for reason: " . $e->getMessage());
             return;
         }
+        $this->log('info', count($orderList) . " order(-s) was/were found");
         foreach ($orderList as $order) {
             /** AmazonOrder $order */
             try {
@@ -176,7 +177,48 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                 break;
             case 1:
                 $item = array_shift($items);
-                $trackingNumber = $item['tracking_number'];
+                /*
+                 * There may be several numbers
+                 * This field will return JSON string which is decoded to an array of the following structure (for example):
+                 * Array
+                 * (
+                 *     [0] => Array
+                 *         (
+                 *             [tracking_number] => C11573505555568
+                 *             [scanned_date] => 1507199520
+                 *             [status] => DELIVERED  Delivered  JUBA KENYON
+                 *         )
+                 *
+                 *     [1] => Array
+                 *         (
+                 *             [tracking_number] => C11573505555922
+                 *             [scanned_date] => 1507199520
+                 *             [status] => DELIVERED  Delivered  JUBA KENYON
+                 *         )
+                 *
+                 *     [2] => Array
+                 *         (
+                 *             [tracking_number] => C11573505556524
+                 *             [scanned_date] => 1507199520
+                 *             [status] => DELIVERED  Delivered  JUBA KENYON
+                 *         )
+                 *
+                 * )
+                 * So we have to collect all the 'tracking_number' values from entire array to a single string,
+                 * where values are separated by coma.
+                 */
+
+                $trackingJson = $item['tracking'];
+                $trackingAssoc = json_decode($trackingJson, true);
+                $trackingNumber = [];
+                if (!isset($trackingAssoc['tracking'])) {
+                    $trackingNumber = null;
+                } else {
+                    foreach ($trackingAssoc['tracking'] as $item) {
+                        $trackingNumber[] = $item['tracking_number'];
+                    }
+                    $trackingNumber = join(", ", $trackingNumber);
+                }
                 break;
             default:
                 throw new AmazonOrderTaskException("There are a few orders with the same tracking number");

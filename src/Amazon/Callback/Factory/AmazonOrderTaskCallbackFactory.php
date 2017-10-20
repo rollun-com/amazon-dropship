@@ -8,11 +8,16 @@ use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
 
+/**
+ * Class AmazonOrderTaskCallbackFactory
+ *
+ * @package rollun\amazonDropship\Amazon\Callback\Factory
+ */
 class AmazonOrderTaskCallbackFactory implements FactoryInterface
 {
     const MODE_KEY = 'mode';
-
     const CALLBACK_KEY = 'callback';
+    const SCHEDULE_KEY = 'schedule';
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
@@ -34,6 +39,13 @@ class AmazonOrderTaskCallbackFactory implements FactoryInterface
                 . "callback with name \"{$serviceConfig[static::CALLBACK_KEY]}\" doesn't exist");
         }
         $callback = $container->get($serviceConfig[static::CALLBACK_KEY]);
+        unset($serviceConfig[static::CALLBACK_KEY]);
+        if (!isset($serviceConfig[static::SCHEDULE_KEY])) {
+            $serviceConfig[static::SCHEDULE_KEY] = [
+                'hours' => ['*'],
+                'minutes' => ['*'],
+            ];
+        }
         $instance = new AmazonOrderTaskCallback($callback, $serviceConfig);
         return $instance;
     }

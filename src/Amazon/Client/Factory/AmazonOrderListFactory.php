@@ -17,6 +17,11 @@ class AmazonOrderListFactory implements  FactoryInterface
     const ORDER_CLIENT_MOCK_FILES_KEY = 'mock_files';
     const ORDER_CLIENT_PATH_TO_CONFIG_KEY = 'path_to_config';
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config');
