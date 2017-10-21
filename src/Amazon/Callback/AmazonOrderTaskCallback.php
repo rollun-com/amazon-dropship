@@ -29,11 +29,18 @@ class AmazonOrderTaskCallback extends Callback
     {
         $logger = new Logger();
         $logger->debug('Try to call Amazon Order task on schedule');
-        // Runs task only on schedule
 
+        // Runs task only on schedule
         if ($this->checkSchedule()) {
             $logger->debug('The schedule matches with the current time so the task will be run.');
-            return parent::__invoke($this->value);
+            try {
+                $result = parent::__invoke($this->value);
+            } catch (\Exception $e) {
+                $result = null;
+                $logger->critical("During an executing an error occurred: " . $e->getMessage());
+            } finally {
+                return $result;
+            }
         }
         $logger->debug("The schedule doesn't match with the current time so do nothing.");
         return false;
