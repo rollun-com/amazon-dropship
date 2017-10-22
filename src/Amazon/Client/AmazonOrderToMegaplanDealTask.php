@@ -261,7 +261,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                         Deal::AMAZON_ORDER_ID_KEY => $amazonOrderId,
                         Deal::TRACKING_NUMBER_KEY => $trackingNumber,
                     ];
-                    $this->megaplanDataStore->create($megaplanItemData, true);
+                    $this->megaplanDataStore->update($megaplanItemData, false);
                     $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" (Megaplan deal Id=\"{$deal['Id']}\") was found: {$trackingNumber}.";
                     $logLevel = 'info';
                 } else {
