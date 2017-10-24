@@ -30,28 +30,9 @@ class ConfigProvider
             AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => $this->getAmazonOrderClient(),
             'callback' => $this->getCallback(),
             'interrupt' => $this->getInterrupt(),
-            'dataStore' => [
-                'tracking_number_dataStore' => [
-                    'class' => CsvBase::class,
-                    'filename' => Command::getDataDir() . 'orderHistory.csv',
-                    'delimeter' => ';',
-                ],
-            ],
-            // Service descriptions
             AmazonOrderTaskCallback::class => [
                 'callback' => 'taskAmazonOrder',
-                'mode' => 'Modified',
-                'since_datetime' => '-1 Hour',
-                'schedule' => [
-                    'hours' => ['*'],
-                    'minutes' => [0],
-                ],
-            ],
-            AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY => [
-                AmazonOrderListFactory::ORDER_CLIENT_CONFIG_SECTION_KEY => "SaaS2Amazon",
-                AmazonOrderListFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY => Command::getDataDir() .
-                    "amazon/client/amazon-config.php",
-            ],
+            ]
         ];
     }
 
@@ -66,9 +47,6 @@ class ConfigProvider
             'invokables' => [
             ],
             'factories'  => [
-                AmazonOrderToMegaplanDealTask::class => AmazonOrderToMegaplanDealTaskFactory::class,
-                AmazonOrderTaskCallback::class => AmazonOrderTaskCallbackFactory::class,
-                AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY => AmazonOrderListFactory::class,
             ],
             'aliases' => [
                 AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
@@ -77,6 +55,7 @@ class ConfigProvider
                 'megaplanDataStore' => 'megaplan_dataStore_aspect',
                 'trackingNumberDataStore' => 'tracking_number_dataStore',
                 'logger' => Logger::class,
+                'amazonOrderTaskCallback' => AmazonOrderTaskCallback::class,
             ],
         ];
     }
@@ -118,7 +97,6 @@ class ConfigProvider
             'cron_hourly_ticker' => [
                 'class' => 'rollun\callback\Callback\Ticker',
                 TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-//                TickerAbstractFactory::KEY_TICK_DURATION => 60 * 60 * 1000, // one hour in microseconds
                 TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
                 'callback' => 'hourly_multiplexer_interrupter',
             ],
@@ -141,8 +119,7 @@ class ConfigProvider
         return [
             'AmazonOrderToMegaplanDealTask_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => AmazonOrderTaskCallback::class,
-//                'callbackService' => 'min_multiplexer',
+                'callbackService' => 'amazonOrderTaskCallback',
             ],
             'hourly_multiplexer_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',

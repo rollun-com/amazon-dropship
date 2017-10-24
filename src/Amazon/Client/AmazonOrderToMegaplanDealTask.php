@@ -65,25 +65,28 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
     {
         try {
             $orderList = $this->getOrderList($value);
-        } catch (\Exception $e) {
-            $this->log('critical', "Item wasn't created for reason: " . $e->getMessage());
-            return;
-        }
-        $this->log('info', count($orderList) . " order(-s) was/were found");
-        foreach ($orderList as $order) {
-            /** AmazonOrder $order */
-            try {
-                $item = $this->megaplanDataStore->create($this->fetchMegaplanItemData($order), true);
-                $message = "Item was created: " . print_r($item, 1);
-                $logLevel = 'info';
-            } catch (\Exception $e) {
-                $message = "Item wasn't created for reason: " . $e->getMessage();
-                $logLevel = 'critical';
-            } finally {
-                $this->log($logLevel, $message);
+            $this->log('info', count($orderList) . " order(-s) was/were found");
+            foreach ($orderList as $order) {
+                /** AmazonOrder $order */
+                try {
+                    $item = $this->megaplanDataStore->create($this->fetchMegaplanItemData($order), true);
+                    $message = "Item was created: " . print_r($item, 1);
+                    $logLevel = 'info';
+                } catch (\Exception $e) {
+                    $message = "Item wasn't created for reason: " . $e->getMessage();
+                    $logLevel = 'critical';
+                } finally {
+                    $this->log($logLevel, $message);
+                }
             }
+        } catch (\Exception $e) {
+            $this->log('critical', "Can't create deals for the following reason: " . $e->getMessage());
         }
-        $this->findTrackingNumbersAndSetThemToMegaplanDeals();
+        try {
+            $this->findTrackingNumbersAndSetThemToMegaplanDeals();
+        } catch (\Exception $e) {
+            $this->log('critical', "Can't find tracking numbers for the deals for the following reason: " . $e->getMessage());
+        }
     }
 
     /**
@@ -105,7 +108,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
             throw new AmazonOrderTaskException("The parameter \"mode\" has to have a value 'Created' or 'Modified' only");
         }
         if (!isset($value['since_datetime'])) {
-            $value['since_datetime'] = null;
+            $value['since_datetime'] = "-1 Hours";
         }
         if (!isset($value['till_datetime'])) {
             $value['till_datetime'] = null;
@@ -158,6 +161,8 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
 
     /**
      * Gets tracking number from a remote dataStore.
+     *
+     * @todo: this method is not a responsibility of this class. It has to be moved to another service/class.
      *
      * @param $amazonOrderId
      * @return mixed
@@ -238,6 +243,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
             new ScalarOperator\EqNode('Category1000060CustomFieldTrekNomer', null),
         ]);
         $query->setQuery($andNode);
+
         $deals = $this->megaplanDataStore->query($query);
         switch (count($deals)) {
             case 0:
@@ -320,5 +326,17 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
     public function unserialize($serialized)
     {
         $this->__construct();
+    }
+
+    /**
+     * Returns last successful start time from some remote dataStore or another store.
+     *
+     * @todo: now the method returns a constant. But it has to return this value from another store.
+     *
+     * @return bool|string
+     */
+    protected function getLastSuccessfulStartTime()
+    {
+        return date("-3 Hours");
     }
 }
