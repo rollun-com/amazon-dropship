@@ -96,32 +96,32 @@ class AmazonOrderInstaller extends InstallerAbstract
 
         do {
             $mode = $this->consoleIO->ask(
-                "By what field do you want to receive Amazon orders (" . join("|", $modeCases) . ")]?",
+                "By what field do you want to receive Amazon orders? [" . join("|", $modeCases) . "]:",
                 $config['mode']
             );
             if (!in_array($mode, $modeCases)) {
-                $this->consoleIO->write("Specified value is wrong. The value has to be [" . join(", ", $modeCases) . "]");
+                $this->consoleIO->write("<error>Specified value is wrong</error>. The value has to be [" . join(", ", $modeCases) . "]");
             }
         } while (!in_array($mode, $modeCases));
         $config['mode'] = $mode;
 
         $config['since_datetime'] = $this->consoleIO->ask(
-            "Since what time do you want to receive Amazon orders?",
+            "Since what time do you want to receive Amazon orders? [{$config['since_datetime']}]:",
             $config['since_datetime']
         );
 
         $config['till_datetime'] = $this->consoleIO->ask(
-            "Till what time do you want to receive Amazon orders (null - till now)?",
+            "Till what time do you want to receive Amazon orders (null - till now)? [{$config['till_datetime']}]:",
             $config['till_datetime']
         );
 
         $config['schedule']['hours'] = [$this->consoleIO->ask(
-            "Set the task start hour(-s) (separated by a comma; * - every)",
+            "Set the task start hour(-s) (separated by a comma; * - every) [{$config['schedule']['hours']}]:",
             $config['schedule']['hours']
         )];
 
         $config['schedule']['minutes'] = [$this->consoleIO->ask(
-            "Set the task start minute(-s) of an hour (separated by a comma; * - every)",
+            "Set the task start minute(-s) of an hour (separated by a comma; * - every) [{$config['schedule']['minutes']}]:",
             $config['schedule']['minutes']
         )];
 
@@ -137,12 +137,12 @@ class AmazonOrderInstaller extends InstallerAbstract
         ];
 
         $config[AmazonOrderListFactory::ORDER_CLIENT_CONFIG_SECTION_KEY] = $this->consoleIO->ask(
-            "Set a section of the Amazon config where credentials are stored",
+            "Set a section of the Amazon config where credentials are stored [{$config[AmazonOrderListFactory::ORDER_CLIENT_CONFIG_SECTION_KEY]}]:",
             $config[AmazonOrderListFactory::ORDER_CLIENT_CONFIG_SECTION_KEY]
         );
 
         $config[AmazonOrderListFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY] = $this->consoleIO->ask(
-            "Set the path to the Amazon config file",
+            "Set the path to the Amazon config file [{$config[AmazonOrderListFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY]}]:",
             $config[AmazonOrderListFactory::ORDER_CLIENT_PATH_TO_CONFIG_KEY]
         );
 
