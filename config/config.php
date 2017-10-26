@@ -15,7 +15,7 @@ $aggregator = new ConfigAggregator([
     \rollun\parser\ConfigProvider::class,
     \rollun\amazonDropship\Amazon\ConfigProvider::class,
     \Zend\Serializer\ConfigProvider::class,
-    \Zend\Db\ConfigProvider::class,
+//    \Zend\Db\ConfigProvider::class,
     \Zend\Validator\ConfigProvider::class,
     \Zend\I18n\ConfigProvider::class,
     \Zend\Filter\ConfigProvider::class,

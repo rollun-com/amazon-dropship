@@ -164,15 +164,15 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
      *
      * @todo: this method is not a responsibility of this class. It has to be moved to another service/class.
      *
-     * @param $amazonOrderId
+     * @param $merchantOrderId
      * @return mixed
      * @throws AmazonOrderTaskException
      */
-    public function getTrackingNumber($amazonOrderId)
+    public function getTrackingNumber($merchantOrderId)
     {
         $query = new Query();
         $node = new ScalarOperator\EqNode(
-            static::TRACKING_DATASTORE_INVOICE_NUMBER_KEY, $amazonOrderId
+            static::TRACKING_DATASTORE_INVOICE_NUMBER_KEY, $merchantOrderId
         );
         $query->setQuery($node);
         $items = $this->trackingNumberDataStore->query($query);
@@ -213,7 +213,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                  * where values are separated by coma.
                  */
 
-                $trackingJson = $item['tracking'];
+                $trackingJson = $item['tracking_data'];
                 $trackingAssoc = json_decode($trackingJson, true);
                 $trackingNumber = [];
                 if (!isset($trackingAssoc['tracking'])) {
@@ -260,11 +260,14 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
 
         foreach($deals as $deal) {
             $amazonOrderId = $deal[$this->megaplanDataStore->getMappedField(Deal::AMAZON_ORDER_ID_KEY)];
+            $merchantOrderId = $deal[$this->megaplanDataStore->getMappedField(Deal::MERCHANT_ORDER_ID_KEY)];
             try {
-                $trackingNumber = $this->getTrackingNumber($amazonOrderId);
+                $trackingNumber = $this->getTrackingNumber($merchantOrderId);
                 if ($trackingNumber) {
                     $megaplanItemData = [
                         Deal::AMAZON_ORDER_ID_KEY => $amazonOrderId,
+                        Deal::PAYMENTS_DATE_KEY => $deal[$this->megaplanDataStore->getMappedField(Deal::PAYMENTS_DATE_KEY)],
+                        Deal::MERCHANT_ORDER_ID_KEY => $merchantOrderId,
                         Deal::TRACKING_NUMBER_KEY => $trackingNumber,
                     ];
                     $this->megaplanDataStore->update($megaplanItemData, false);

@@ -100,7 +100,7 @@ class AmazonOrderInstaller extends InstallerAbstract
                 $config['mode']
             );
             if (!in_array($mode, $modeCases)) {
-                $this->consoleIO->write("<error>Specified value is wrong</error>. The value has to be [" . join(", ", $modeCases) . "]");
+                $this->consoleIO->write(PHP_EOL . "<error>Specified value is wrong</error>. The value has to be [" . join(", ", $modeCases) . "]");
             }
         } while (!in_array($mode, $modeCases));
         $config['mode'] = $mode;

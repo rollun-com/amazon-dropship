@@ -60,7 +60,8 @@
     "rollun-com/rollun-permission": "^2.0",
     "zendframework/zend-i18n": "^2.7",
     "cpigroup/php-amazon-mws": "^1.3",
-    "megaplan/simple_client": "dev-master"
+    "megaplan/simple_client": "dev-master",
+    "http-interop/http-middleware": "^0.4.1"
   },
   "require-dev": {
     "mockery/mockery": "dev-master",
