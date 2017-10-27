@@ -4,6 +4,7 @@ namespace rollun\amazonDropship\Amazon\Client;
 
 use AmazonOrderList;
 use AmazonOrder;
+use DateTime;
 use rollun\callback\Callback\CallbackInterface;
 use rollun\datastore\DataStore\Interfaces\DataStoresInterface;
 use rollun\amazonDropship\Megaplan\Aspect\Deal;
@@ -65,13 +66,13 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
     {
         try {
             $orderList = $this->getOrderList($value);
-            $this->log('info', count($orderList) . " order(-s) was/were found");
+            $this->log('debug', count($orderList) . " order(-s) was/were found");
             foreach ($orderList as $order) {
                 /** AmazonOrder $order */
                 try {
                     $item = $this->megaplanDataStore->create($this->fetchMegaplanItemData($order), true);
                     $message = "Item was created: " . print_r($item, 1);
-                    $logLevel = 'info';
+                    $logLevel = 'debug';
                 } catch (\Exception $e) {
                     $message = "Item wasn't created for reason: " . $e->getMessage();
                     $logLevel = 'critical';
@@ -126,7 +127,18 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
     public function getOrderList($value)
     {
         $value = $this->checkIncomingParameters($value);
-        $this->amazonOrderList->setLimits($value['mode'], $value['since_datetime'], $value['till_datetime']);
+        $sinceDateTime = $value['since_datetime'];
+
+        if (!is_null($sinceDateTime)) {
+            $sinceDateTime = min(new DateTime(date("Y-m-d H:i:s", strtotime($sinceDateTime))), $this->getLastSuccessfulStartTime());
+            $sinceDateTime = $sinceDateTime->format(DateTime::RFC3339);
+        }
+
+        $tillDateTime = $value['till_datetime'] ? new DateTime(date("Y-m-d H:i:s", strtotime($value['till_datetime']))) : new DateTime();
+        $tillDateTime = $tillDateTime->format(DateTime::RFC3339);
+
+        $this->log('debug', "Try to receive orders since {$sinceDateTime} till {$tillDateTime}");
+        $this->amazonOrderList->setLimits($value['mode'], $sinceDateTime, $tillDateTime);
         $this->amazonOrderList->setUseToken();
         $this->amazonOrderList->fetchOrders();
         $result = $this->amazonOrderList;
@@ -233,7 +245,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
     }
 
     /**
-     * Gets tracking numbers for all deals in status "Waiting for shipping" where there is no tracking number.
+     * Gets tracking numbers for all deals in status "Waiting for shipping" which don't have one.
      */
     public function findTrackingNumbersAndSetThemToMegaplanDeals()
     {
@@ -244,6 +256,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
         ]);
         $query->setQuery($andNode);
 
+        $this->log('debug', "Trying to search deals with the status = " . static::WAITING_FOR_SHIPPING_STATUS);
         $deals = $this->megaplanDataStore->query($query);
         switch (count($deals)) {
             case 0:
@@ -253,29 +266,32 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                 $logMessage = "One deal was found";
                 break;
             default:
-                $logMessage = count($deals) . " deals were found";
+                $logMessage = count($deals) . " deals with the status  were found";
                 break;
         }
-        $this->log('info', $logMessage);
+        $this->log('debug', $logMessage);
 
+        $trackingNumbersFound = 0;
         foreach($deals as $deal) {
             $amazonOrderId = $deal[$this->megaplanDataStore->getMappedField(Deal::AMAZON_ORDER_ID_KEY)];
             $merchantOrderId = $deal[$this->megaplanDataStore->getMappedField(Deal::MERCHANT_ORDER_ID_KEY)];
+            $orderDate = $deal[$this->megaplanDataStore->getMappedField(Deal::PAYMENTS_DATE_KEY)];
             try {
                 $trackingNumber = $this->getTrackingNumber($merchantOrderId);
                 if ($trackingNumber) {
+                    $trackingNumbersFound++;
                     $megaplanItemData = [
                         Deal::AMAZON_ORDER_ID_KEY => $amazonOrderId,
-                        Deal::PAYMENTS_DATE_KEY => $deal[$this->megaplanDataStore->getMappedField(Deal::PAYMENTS_DATE_KEY)],
+                        Deal::PAYMENTS_DATE_KEY => $orderDate,
                         Deal::MERCHANT_ORDER_ID_KEY => $merchantOrderId,
                         Deal::TRACKING_NUMBER_KEY => $trackingNumber,
                     ];
                     $this->megaplanDataStore->update($megaplanItemData, false);
-                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" (Megaplan deal Id=\"{$deal['Id']}\") was found: {$trackingNumber}.";
-                    $logLevel = 'info';
+                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" from {$orderDate} (Megaplan deal Id=\"{$deal['Id']}\") was found: {$trackingNumber}.";
+                    $logLevel = 'debug';
                 } else {
-                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" (Megaplan deal Id=\"{$deal['Id']}\") wasn't found.";
-                    $logLevel = 'info';
+                    $logMessage = "A tracking number for the Amazon order \"{$amazonOrderId}\" from {$orderDate} (Megaplan deal Id=\"{$deal['Id']}\") wasn't found.";
+                    $logLevel = 'debug';
                 }
             } catch (\Exception $e) {
                 $logMessage = "Can't find and update a tracking number for the next reason: " . $e->getMessage();
@@ -284,6 +300,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                 $this->log($logLevel, $logMessage);
             }
         }
+        $this->log('debug', "Total of {$trackingNumbersFound} number(-s) was/were processed.");
     }
 
     /**
@@ -340,6 +357,6 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
      */
     protected function getLastSuccessfulStartTime()
     {
-        return date("-3 Hours");
+        return new DateTime(date("Y-m-d H:i:s", strtotime("-3 Hours")));
     }
 }

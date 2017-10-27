@@ -14,10 +14,14 @@
       "email": "it.proffesor02@gmail.com"
     }
   ],
+  "config": {
+    "fxp-asset": {
+      "installer-paths": {
+        "npm-asset-library": "public/assets/js"
+      }
+    }
+  },
   "extra": {
-    "asset-installer-paths": {
-      "npm-asset-library": "public/assets/js"
-    },
     "zf": [
       {
         "component": "\\rollun\\amazonDropship",
