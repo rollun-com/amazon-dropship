@@ -266,7 +266,7 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
                 $logMessage = "One deal was found";
                 break;
             default:
-                $logMessage = count($deals) . " deals with the status  were found";
+                $logMessage = count($deals) . " deals were found";
                 break;
         }
         $this->log('debug', $logMessage);
