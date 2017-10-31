@@ -39,6 +39,12 @@ class AmazonOrderInstaller extends InstallerAbstract
                     ],
                 ],
             ];
+
+            $this->consoleIO->write("The MemoryDataStore is set by default for receiving tracking numbers." . PHP_EOL
+                . "If your tracking numbers DataStore is different <info>you have to override its configuration in the AmazonDropship config file</info>");
+
+            $this->consoleIO->write("Be sure <info>the folder /data/logs and all files inside it have rights for a writing</info>.");
+
             return $config;
         }
     }
