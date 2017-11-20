@@ -3,8 +3,8 @@
 namespace rollun\test\amazonDropship\Amazon\Client\Factory;
 
 use Interop\Container\ContainerInterface;
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
-use rollun\amazonDropship\Amazon\Client\AmazonOrderToMegaplanDealTask;
+use rollun\amazonDropship\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
+use rollun\amazonDropship\Client\AmazonOrderToMegaplanDealTask;
 
 class AmazonOrderToMegaplanDealTaskFactoryTest extends \PHPUnit_Framework_TestCase
 {

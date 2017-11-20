@@ -2,8 +2,8 @@
 
 namespace rollun\test\amazonDropship\Amazon\Callback\Factory;
 
-use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
-use rollun\amazonDropship\Amazon\Callback\Factory\AmazonOrderTaskCallbackFactory;
+use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Callback\Factory\AmazonOrderTaskCallbackFactory;
 
 class AmazonOrderTaskCallbackFactoryTest extends \PHPUnit_Framework_TestCase
 {

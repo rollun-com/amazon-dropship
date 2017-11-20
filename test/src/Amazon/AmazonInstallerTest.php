@@ -2,11 +2,11 @@
 
 namespace rollun\test\amazonDropship\Amazon;
 
-use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderListFactory;
+use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Client\Factory\AmazonOrderListFactory;
 use rollun\installer\Command;
 use rollun\installer\TestCase\InstallerTestCase;
-use rollun\amazonDropship\Amazon\AmazonOrderInstaller;
+use rollun\amazonDropship\AmazonOrderInstaller;
 
 class AmazonInstallerTest extends InstallerTestCase
 {

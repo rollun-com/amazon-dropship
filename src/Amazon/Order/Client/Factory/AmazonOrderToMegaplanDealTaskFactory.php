@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\Client\Factory;
+namespace rollun\amazonDropship\Client\Factory;
 
 use AmazonOrderList;
 use Interop\Container\ContainerInterface;
@@ -19,7 +19,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *     'logger' => 'real_name_logger_service',  // not necessary; may be absent
  * ]
  *
- * @package rollun\amazonDropship\Amazon\Client\Factory
+ * @package rollun\amazonDropship\Client\Factory
  */
 class AmazonOrderToMegaplanDealTaskFactory implements FactoryInterface
 {

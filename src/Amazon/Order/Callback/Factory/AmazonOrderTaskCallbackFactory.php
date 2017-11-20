@@ -1,17 +1,17 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\Callback\Factory;
+namespace rollun\amazonDropship\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
 
 /**
  * Class AmazonOrderTaskCallbackFactory
  *
- * @package rollun\amazonDropship\Amazon\Callback\Factory
+ * @package rollun\amazonDropship\Callback\Factory
  */
 class AmazonOrderTaskCallbackFactory implements FactoryInterface
 {

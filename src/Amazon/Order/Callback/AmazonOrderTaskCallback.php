@@ -1,8 +1,8 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\Callback;
+namespace rollun\amazonDropship\Callback;
 
-use rollun\amazonDropship\Amazon\Callback\Factory\AmazonOrderTaskCallbackFactory;
+use rollun\amazonDropship\Callback\Factory\AmazonOrderTaskCallbackFactory;
 use rollun\callback\Callback\Callback;
 use rollun\logger\Logger;
 

@@ -13,19 +13,17 @@ $cacheConfig = [
 $aggregator = new ConfigAggregator([
     \rollun\amazonDropship\Megaplan\ConfigProvider::class,
     \rollun\parser\ConfigProvider::class,
-    \rollun\amazonDropship\Amazon\ConfigProvider::class,
+    \rollun\amazonDropship\ConfigProvider::class,
     \Zend\Serializer\ConfigProvider::class,
 //    \Zend\Db\ConfigProvider::class,
     \Zend\Validator\ConfigProvider::class,
     \Zend\I18n\ConfigProvider::class,
     \Zend\Filter\ConfigProvider::class,
     \Zend\Cache\ConfigProvider::class,
-    \Zend\Mail\ConfigProvider::class,
     \Zend\Session\ConfigProvider::class,
     \rollun\actionrender\ConfigProvider::class,
     // Include cache configuration
     new ArrayProvider($cacheConfig),
-
     // Default App module config
 
     // Load application config in a pre-defined order in such a way that local settings
@@ -35,7 +33,6 @@ $aggregator = new ConfigAggregator([
     //   - `local.php`
     //   - `*.local.php`
     new PhpFileProvider('config/autoload/{{,*.}global,{,*.}local}.php'),
-
     // Load development config if it exists
     new PhpFileProvider('config/development.config.php'),
 ], $cacheConfig['config_cache_path']);

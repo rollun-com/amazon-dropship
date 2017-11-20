@@ -3,7 +3,7 @@
   "description": "Skeleton for app or lib",
   "minimum-stability": "stable",
   "license": "proprietary",
-  "type": "project",
+  "type": "library",
   "authors": [
     {
       "name": "avz-cmf",
@@ -83,8 +83,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "rollun\\test\\": "src/Test/src",
-      "rollun\\amazonDropship\\": "src/",
+      "rollun\\test\\": "src/Test/src/",
+      "rollun\\amazonDropship\\": "src/Amazon/Order/",
       "rollun\\parser\\": "src/Parser/"
     }
   },

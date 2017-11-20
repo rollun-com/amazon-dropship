@@ -1,12 +1,12 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon;
+namespace rollun\amazonDropship;
 
-use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
-use rollun\amazonDropship\Amazon\Callback\Factory\AmazonOrderTaskCallbackFactory;
-use rollun\amazonDropship\Amazon\Client\AmazonOrderToMegaplanDealTask;
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderListFactory;
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
+use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Callback\Factory\AmazonOrderTaskCallbackFactory;
+use rollun\amazonDropship\Client\AmazonOrderToMegaplanDealTask;
+use rollun\amazonDropship\Client\Factory\AmazonOrderListFactory;
+use rollun\amazonDropship\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
 use rollun\datastore\DataStore\Memory;
 use rollun\installer\Command;
 use rollun\installer\Install\InstallerAbstract;

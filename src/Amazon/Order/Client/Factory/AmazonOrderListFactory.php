@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\Client\Factory;
+namespace rollun\amazonDropship\Client\Factory;
 
 use AmazonOrderList;
 use Interop\Container\ContainerInterface;

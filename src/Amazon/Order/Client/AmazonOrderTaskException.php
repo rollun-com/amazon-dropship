@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\Client;
+namespace rollun\amazonDropship\Client;
 
 class AmazonOrderTaskException extends \Exception
 {

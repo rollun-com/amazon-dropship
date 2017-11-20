@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon\DataStore;
+namespace rollun\amazonDropship\DataStore;
 
 
 class DbTable extends \rollun\datastore\DataStore\DbTable

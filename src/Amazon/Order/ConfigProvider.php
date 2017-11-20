@@ -1,13 +1,13 @@
 <?php
 
-namespace rollun\amazonDropship\Amazon;
+namespace rollun\amazonDropship;
 
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderListFactory;
-use rollun\amazonDropship\Amazon\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
-use rollun\amazonDropship\Amazon\Client\AmazonOrderToMegaplanDealTask;
+use rollun\amazonDropship\Client\Factory\AmazonOrderListFactory;
+use rollun\amazonDropship\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
+use rollun\amazonDropship\Client\AmazonOrderToMegaplanDealTask;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\logger\Logger;
-use rollun\amazonDropship\Amazon\Callback\AmazonOrderTaskCallback;
+use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
 
 class ConfigProvider
 {
