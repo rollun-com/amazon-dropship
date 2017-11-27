@@ -84,24 +84,24 @@ class ConfigProvider
     public function getCallback()
     {
         return [
-//            'hourly_multiplexer' => [
-//                'class' => 'rollun\callback\Callback\Multiplexer',
-//                'interrupters' => [
-//                    'AmazonOrderToMegaplanDealTask_interrupter',
-//                ],
-//            ],
-//            'cron_hourly_ticker' => [
-//                'class' => 'rollun\callback\Callback\Ticker',
-//                TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-//                TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
-//                'callback' => 'hourly_multiplexer_interrupter',
-//            ],
-//            'min_multiplexer' => [
-//                'class' => 'rollun\callback\Callback\Multiplexer',
-//                'interrupters' => [
-//                    'hourly_ticker_interrupter',
-//                ],
-//            ],
+            'hourly_multiplexer' => [
+                'class' => 'rollun\callback\Callback\Multiplexer',
+                'interrupters' => [
+                    'AmazonOrderToMegaplanDealTask_interrupter',
+                ],
+            ],
+            'cron_hourly_ticker' => [
+                'class' => 'rollun\callback\Callback\Ticker',
+                TickerAbstractFactory::KEY_TICKS_COUNT => 1,
+                TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
+                'callback' => 'hourly_multiplexer_interrupter',
+            ],
+            'min_multiplexer' => [
+                'class' => 'rollun\callback\Callback\Multiplexer',
+                'interrupters' => [
+                    'hourly_ticker_interrupter',
+                ],
+            ],
         ];
     }
 
@@ -113,18 +113,18 @@ class ConfigProvider
     public function getInterrupt()
     {
         return [
-//            'AmazonOrderToMegaplanDealTask_interrupter' => [
-//                'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => 'amazonOrderTaskCallback',
-//            ],
-//            'hourly_multiplexer_interrupter' => [
-//                'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => 'hourly_multiplexer',
-//            ],
-//            'hourly_ticker_interrupter' => [
-//                'class' => 'rollun\callback\Callback\Interruptor\Process',
-//                'callbackService' => 'cron_hourly_ticker',
-//            ],
+            'AmazonOrderToMegaplanDealTask_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'amazonOrderTaskCallback',
+            ],
+            'hourly_multiplexer_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'hourly_multiplexer',
+            ],
+            'hourly_ticker_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'cron_hourly_ticker',
+            ],
         ];
     }
 }
