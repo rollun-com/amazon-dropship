@@ -22,6 +22,11 @@ class AmazonItemSearchTaskCallback extends Callback
         $this->schedule = $value[AmazonItemsearchTaskCallbackFactory::SCHEDULE_KEY];
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke($value)
     {
         $logger = new Logger();
@@ -42,13 +47,12 @@ class AmazonItemSearchTaskCallback extends Callback
         $logger->debug("The schedule doesn't match with the current time so do nothing.");
         return false;
     }
-//
-//    public function __sleep()
-//    {
-//        $classPropertiesToSerialize = parent::__sleep();
-//        return array_merge($classPropertiesToSerialize, ['value', 'schedule']);
-//    }
 
+    /**
+     * Checks schedule and runs the task if the time has already come
+     *
+     * @return bool
+     */
     protected  function checkSchedule()
     {
         $runCondition = false;

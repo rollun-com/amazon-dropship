@@ -46,13 +46,21 @@ class AmazonItemSearchTask implements CallbackInterface, \Serializable
         InsideConstruct::setConstructParams();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke($value)
     {
+        // Iterate brand DataStore
         foreach ($this->brandSourceDataStore as $row) {
+            // Fill out search parameters
             $this->amazonSearchOperation->setCategory($row['category'])
                 ->setKeywords($row['brand']);
             $formattedResponse = $this->amazonProductAdvertisingApiClient->runOperation($this->amazonSearchOperation);
 
+            // clear the temporary DataStore
             $this->temporaryDataStore->deleteAll();
 
             foreach ((array)$formattedResponse['Items']['Item'] as $item) {
@@ -74,10 +82,12 @@ class AmazonItemSearchTask implements CallbackInterface, \Serializable
                 ];
                 $this->temporaryDataStore->create($itemData);
             }
+            // Additinal search filters
             $query = new Query();
             $leNode = new ScalarOperator\LeNode('SalesRank', 300000);
             $query->setQuery($leNode);
             $finalResults = $this->temporaryDataStore->query($query);
+            // saving results
             foreach ($finalResults as $resultItem) {
                 $this->itemSearchResultDataStore->create($resultItem, true);
             }

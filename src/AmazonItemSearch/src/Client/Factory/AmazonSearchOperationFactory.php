@@ -9,6 +9,23 @@ use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use ApaiIO\Operations\Search;
 
+/**
+ * Class AmazonSearchOperationFactory
+ *
+ * <code>
+ * 'amazonSearchOperation' => [
+ *     'responseGroup' => [ // strongly not recommended to change
+ *         'SalesRank',
+ *         'OfferFull',
+ *         'Large',
+ *     ],
+ *     'minimum_price' => 0, // not necessary; a value in the bank view (10000 == $100.00)
+ *     'maximum_price' => 10000, // not necessary; a value in the bank view (10000 == $100.00)
+ * ],
+ * </code>
+ *
+ * @package rollun\amazonItemSearch\Client\Factory
+ */
 class AmazonSearchOperationFactory implements FactoryInterface
 {
     const AMAZON_SEARCH_OPERATION_KEY = 'amazonSearchOperation';
@@ -19,6 +36,11 @@ class AmazonSearchOperationFactory implements FactoryInterface
 
     const MAXIMUM_PRICE_KEY = 'maximumPrice';
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config');

@@ -11,6 +11,16 @@ use rollun\amazonItemSearch\Callback\AmazonItemSearchTaskCallback;
 /**
  * Class AmazonOrderTaskCallbackFactory
  *
+ * <code>
+ * AmazonItemSearchTaskCallback::class => [
+ *     'callback' => 'taskAmazonItemSearch',
+ *     'schedule' => [
+ *         'hours' => '*',
+ *         'minutes' => 15,
+ *     ],
+ * ],
+ * </code>
+ *
  * @package rollun\amazonDropship\Callback\Factory
  */
 class AmazonItemSearchTaskCallbackFactory implements FactoryInterface
@@ -18,6 +28,11 @@ class AmazonItemSearchTaskCallbackFactory implements FactoryInterface
     const CALLBACK_KEY = 'callback';
     const SCHEDULE_KEY = 'schedule';
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config');

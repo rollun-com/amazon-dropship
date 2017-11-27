@@ -10,6 +10,20 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use ApaiIO\Configuration\GenericConfiguration;
 use ApaiIO\ApaiIO;
 
+/**
+ * Class ApaiIOFactory
+ *
+ * <code>
+ * 'ApaiIO' => [
+ *     'country' => 'com', // The country could be one of the following: de, com, co.uk, ca, fr, co.jp, it, cn, es, in, com.br, com.mx, com.au
+ *     'access_key' => '',
+ *     'secret_key' => '',
+ *     'associate_tag' => '',
+ * ],
+ * </code>
+ *
+ * @package rollun\amazonItemSearch\Client\Factory
+ */
 class ApaiIOFactory implements  FactoryInterface
 {
     const APAIIO_KEY = 'ApaiIO';
@@ -22,6 +36,11 @@ class ApaiIOFactory implements  FactoryInterface
 
     const ASSOCIATE_TAG_KEY = 'associate_tag';
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         // These can to be removed to config and/or be used via own factories

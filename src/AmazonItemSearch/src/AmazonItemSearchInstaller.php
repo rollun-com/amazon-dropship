@@ -9,7 +9,6 @@ use rollun\amazonItemSearch\Client\Factory\ApaiIOFactory;
 use rollun\datastore\DataStore\CsvBase;
 use rollun\datastore\DataStore\DbTable;
 use rollun\datastore\DataStore\Factory\DbTableAbstractFactory;
-use rollun\datastore\TableGateway\Factory\TableGatewayAbstractFactory;
 use rollun\installer\Command;
 use rollun\installer\Install\InstallerAbstract;
 use rollun\amazonItemSearch\Callback\AmazonItemSearchTaskCallback;
@@ -43,10 +42,10 @@ class AmazonItemSearchInstaller extends InstallerAbstract
                 AmazonItemSearchTaskCallback::class => $this->installAmazonItemSearchTaskCallback(),
 
                 ApaiIOFactory::APAIIO_KEY => [
-                    'country' => '',
-                    'access_key' => '',
-                    'secret_key' => '',
-                    'associate_tag' => '',
+                    ApaiIOFactory::COUNTRY_KEY => '',
+                    ApaiIOFactory::ACCESS_KEY_KEY => '',
+                    ApaiIOFactory::SECRET_KEY_KEY => '',
+                    ApaiIOFactory::ASSOCIATE_TAG_KEY => '',
                 ],
 
                 AmazonSearchOperationFactory::AMAZON_SEARCH_OPERATION_KEY => [
@@ -76,6 +75,11 @@ class AmazonItemSearchInstaller extends InstallerAbstract
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function uninstall()
     {
         if (is_file($this->brandSourceDataStoreFilename)) {
@@ -83,17 +87,34 @@ class AmazonItemSearchInstaller extends InstallerAbstract
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function getDescription($lang = "en")
     {
         return "Sets and allows to use a library for item searching on the Amazon via Product Advertising API";
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * {@inheritdoc}
+     */
     public function isInstall()
     {
         $config = $this->container->get('config');
         return (isset($config[ApaiIOFactory::APAIIO_KEY]));
     }
 
+    /**
+     * Gets dataStores which can be overrided in the local config file
+     *
+     * Also creates a dummy for the BrandSourceDataStore
+     *
+     * @return array
+     */
     public function getDataStore()
     {
         file_put_contents($this->brandSourceDataStoreFilename, "id;brand;category");
@@ -111,6 +132,11 @@ class AmazonItemSearchInstaller extends InstallerAbstract
         ];
     }
 
+    /**
+     * Sets a schedule for the task's callback
+     *
+     * @return array
+     */
     protected function installAmazonItemSearchTaskCallback()
     {
         $config = [
