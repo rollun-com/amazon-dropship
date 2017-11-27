@@ -80,15 +80,13 @@
   ],
   "autoload": {
     "psr-4": {
-      "rollun\\test\\": "src/Test/src/",
-      "rollun\\amazonDropship\\": "src/Amazon/Order/src/",
-      "rollun\\amazonItemSearch\\": "src/Amazon/ItemSearch/src/",
-      "rollun\\parser\\": "src/Parser/"
+      "rollun\\amazonDropship\\": "src/AmazonOrder/src",
+      "rollun\\amazonItemSearch\\": "src/AmazonItemSearch/src",
+      "rollun\\parser\\": "src/Parser/src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "rollun\\test\\skeleton\\": "test/App",
       "rollun\\test\\amazonDropship\\": "test/src",
       "rollun\\test\\parser\\": "test/src/Parser"
     }

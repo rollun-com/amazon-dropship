@@ -54,12 +54,9 @@ class AmazonItemSearchInstaller extends InstallerAbstract
                     AmazonSearchOperationFactory::MAXIMUM_PRICE_KEY => 10000,
                 ],
 
-                TableGatewayAbstractFactory::KEY_TABLE_GATEWAY => [
-                    'item_search_result' => [],
-                ],
                 'db' => [
                     'adapters' => [
-                        'Zend\Db\Adapter\AdapterInterface' => [
+                        'amazon_item_search_connection' => [
                             'driver' => 'Pdo_Mysql',
                             "host" => "localhost",
                             'database' => '',
@@ -73,7 +70,7 @@ class AmazonItemSearchInstaller extends InstallerAbstract
             $this->consoleIO->write("<info>You have to override credentials</info>. Also you can override a <info>prices range: minimum and maximum prices</info>."
                 . PHP_EOL
                 . "If you don't want to use the one <info>you can delete one of them or both</info>" . PHP_EOL
-                . "<error>Pay attention: the price value has to be an integer value - without cents (real price * 100)</error>");
+                . "<info>Pay attention: the price value has to be an integer value - without cents (real price * 100)</info>");
 
             return $config;
         }
@@ -94,7 +91,7 @@ class AmazonItemSearchInstaller extends InstallerAbstract
     public function isInstall()
     {
         $config = $this->container->get('config');
-        return (isset($config[AmazonItemSearchTaskCallback::class]));
+        return (isset($config[ApaiIOFactory::APAIIO_KEY]));
     }
 
     public function getDataStore()
@@ -108,7 +105,8 @@ class AmazonItemSearchInstaller extends InstallerAbstract
             ],
             'result_dataStore' => [
                 "class" => DbTable::class,
-                DbTableAbstractFactory::KEY_TABLE_GATEWAY => "item_search_result",
+                DbTableAbstractFactory::KEY_TABLE_NAME => "",
+                DbTableAbstractFactory::KEY_DB_ADAPTER => "",
             ],
         ];
     }
