@@ -1,14 +1,22 @@
 <?php
 
-namespace rollun\amazonDropship;
+namespace rollun\amazonItemSearch;
 
-use rollun\amazonDropship\Client\Factory\AmazonOrderListFactory;
-use rollun\amazonDropship\Client\Factory\AmazonOrderToMegaplanDealTaskFactory;
-use rollun\amazonDropship\Client\AmazonOrderToMegaplanDealTask;
+use rollun\amazonItemSearch\Callback\AmazonItemSearchTaskCallback;
+use rollun\amazonItemSearch\Callback\Factory\AmazonItemSearchTaskCallbackFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
-use rollun\logger\Logger;
-use rollun\amazonDropship\Callback\AmazonOrderTaskCallback;
+use rollun\datastore\DataStore\Memory;
+use ApaiIO\ApaiIO;
+use rollun\amazonItemSearch\Client\Factory\ApaiIOFactory;
+use ApaiIO\Operations\Search;
+use rollun\amazonItemSearch\Client\Factory\AmazonSearchOperationFactory;
+use rollun\amazonItemSearch\Client\AmazonItemSearchTask;
 
+/**
+ * The configuration provider for the Amazon module
+ *
+ * @see https://docs.zendframework.com/zend-component-installer/
+ */
 class ConfigProvider
 {
     /**
@@ -23,12 +31,20 @@ class ConfigProvider
     {
         return [
             'dependencies' => $this->getDependencies(),
-            AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => $this->getAmazonOrderClient(),
+            'dataStore' => $this->getDataStore(),
             'callback' => $this->getCallback(),
             'interrupt' => $this->getInterrupt(),
-            AmazonOrderTaskCallback::class => [
-                'callback' => 'taskAmazonOrder',
-            ]
+
+            AmazonSearchOperationFactory::AMAZON_SEARCH_OPERATION_KEY => [
+                AmazonSearchOperationFactory::RESPONSE_GROUP_KEY => [
+                    'SalesRank',
+                    'OfferFull',
+                    'Large',
+                ],
+            ],
+            AmazonItemSearchTaskCallback::class => [
+                'callback' => 'taskAmazonItemSearch',
+            ],
         ];
     }
 
@@ -41,34 +57,30 @@ class ConfigProvider
     {
         return [
             'invokables' => [
+                AmazonItemSearchTask::class => AmazonItemSearchTask::class,
             ],
             'factories'  => [
+                AmazonItemSearchTaskCallback::class => AmazonItemSearchTaskCallbackFactory::class,
+                ApaiIO::class => ApaiIOFactory::class,
+                Search::class => AmazonSearchOperationFactory::class,
             ],
             'aliases' => [
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => AmazonOrderToMegaplanDealTask::class,
-                'taskAmazonOrder' => AmazonOrderToMegaplanDealTask::class,
-                'amazonOrderList' => AmazonOrderListFactory::AMAZON_ORDER_LIST_KEY,
-                'megaplanDataStore' => 'megaplan_dataStore_aspect',
-                'trackingNumberDataStore' => 'tracking_number_dataStore',
-                'logger' => Logger::class,
-                'amazonOrderTaskCallback' => AmazonOrderTaskCallback::class,
+                'taskAmazonItemSearch' => AmazonItemSearchTask::class,
+                'taskAmazonItemSearchCallback' => AmazonItemSearchTaskCallback::class,
+                'brandSourceDataStore' => 'brand_source_dataStore',
+                'temporaryDataStore' => 'temporary_dataStore',
+                'itemSearchResultDataStore' => 'result_dataStore',
+                'amazonProductAdvertisingApiClient' => ApaiIO::class,
+                'amazonSearchOperation' => Search::class,
             ],
         ];
     }
 
-    /**
-     * Returns Amazon access parameters
-     *
-     * @return array
-     */
-    public function getAmazonOrderClient()
+    public function getDataStore()
     {
         return [
-            AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_KEY => [
-                AmazonOrderToMegaplanDealTaskFactory::ORDER_CLIENT_CLASS_KEY => AmazonOrderToMegaplanDealTask::class,
-                AmazonOrderToMegaplanDealTaskFactory::MEGAPLAN_DATASTORE_ASPECT_KEY => 'megaplan_dataStore_aspect',
-                AmazonOrderToMegaplanDealTaskFactory::TRACKING_NUMBER_DATASTORE_KEY => 'tracking_number_dataStore',
-                'logger' => Logger::class,
+            'temporary_dataStore' => [
+                'class' => Memory::class,
             ],
         ];
     }
@@ -84,10 +96,10 @@ class ConfigProvider
     public function getCallback()
     {
         return [
-            'hourly_multiplexer' => [
+            'min_multiplexer' => [
                 'class' => 'rollun\callback\Callback\Multiplexer',
                 'interrupters' => [
-                    'AmazonOrderToMegaplanDealTask_interrupter',
+                    'hourly_ticker_interrupter',
                 ],
             ],
             'cron_hourly_ticker' => [
@@ -96,12 +108,13 @@ class ConfigProvider
                 TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
                 'callback' => 'hourly_multiplexer_interrupter',
             ],
-            'min_multiplexer' => [
+            'hourly_multiplexer' => [
                 'class' => 'rollun\callback\Callback\Multiplexer',
                 'interrupters' => [
-                    'hourly_ticker_interrupter',
+                    'AmazoItemSearchTask_interrupter',
                 ],
             ],
+
         ];
     }
 
@@ -113,17 +126,17 @@ class ConfigProvider
     public function getInterrupt()
     {
         return [
-            'AmazonOrderToMegaplanDealTask_interrupter' => [
+            'hourly_ticker_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => 'amazonOrderTaskCallback',
+                'callbackService' => 'cron_hourly_ticker',
             ],
             'hourly_multiplexer_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
                 'callbackService' => 'hourly_multiplexer',
             ],
-            'hourly_ticker_interrupter' => [
+            'AmazoItemSearchTask_interrupter' => [
                 'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => 'cron_hourly_ticker',
+                'callbackService' => 'taskAmazonItemSearchCallback',
             ],
         ];
     }
