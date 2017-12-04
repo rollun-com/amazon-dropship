@@ -138,6 +138,11 @@ class AmazonOrderToMegaplanDealTask implements CallbackInterface, \Serializable
         $tillDateTime = $tillDateTime->format(DateTime::RFC3339);
 
         $this->log('debug', "Try to receive orders since {$sinceDateTime} till {$tillDateTime}");
+
+        // A Hardcode!! By default Amazon provides both types of orders: FBA and MFN. We are only interested in MFN.
+        // if you ever need another value you have to change this row, comment it out or remove.
+        $this->amazonOrderList->setFulfillmentChannelFilter("MFN");
+
         $this->amazonOrderList->setLimits($value['mode'], $sinceDateTime, $tillDateTime);
         $this->amazonOrderList->setUseToken();
         $this->amazonOrderList->fetchOrders();

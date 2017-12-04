@@ -4,7 +4,6 @@ namespace rollun\amazonItemSearch;
 
 use rollun\amazonItemSearch\Callback\AmazonItemSearchTaskCallback;
 use rollun\amazonItemSearch\Callback\Factory\AmazonItemSearchTaskCallbackFactory;
-use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\datastore\DataStore\Memory;
 use ApaiIO\ApaiIO;
 use rollun\amazonItemSearch\Client\Factory\ApaiIOFactory;
@@ -32,9 +31,6 @@ class ConfigProvider
         return [
             'dependencies' => $this->getDependencies(),
             'dataStore' => $this->getDataStore(),
-            'callback' => $this->getCallback(),
-            'interrupt' => $this->getInterrupt(),
-
             AmazonSearchOperationFactory::AMAZON_SEARCH_OPERATION_KEY => [
                 AmazonSearchOperationFactory::RESPONSE_GROUP_KEY => [
                     'SalesRank',
@@ -81,62 +77,6 @@ class ConfigProvider
         return [
             'temporary_dataStore' => [
                 'class' => Memory::class,
-            ],
-        ];
-    }
-
-    /**
-     * Returns cron hourly task config
-     *
-     * 'min_multiplexer' => 'hourly_ticker_interrupter' => 'cron_hourly_ticker'
-     *      => 'hourly_multiplexer_interrupter' => 'hourly_multiplexer' => 'AmazonOrderToMegaplanDealTask_interrupter'
-     *
-     * @return array
-     */
-    public function getCallback()
-    {
-        return [
-            'min_multiplexer' => [
-                'class' => 'rollun\callback\Callback\Multiplexer',
-                'interrupters' => [
-                    'hourly_ticker_interrupter',
-                ],
-            ],
-            'cron_hourly_ticker' => [
-                'class' => 'rollun\callback\Callback\Ticker',
-                TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-                TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
-                'callback' => 'hourly_multiplexer_interrupter',
-            ],
-            'hourly_multiplexer' => [
-                'class' => 'rollun\callback\Callback\Multiplexer',
-                'interrupters' => [
-                    'AmazoItemSearchTask_interrupter',
-                ],
-            ],
-
-        ];
-    }
-
-    /**
-     * Returns cron interrupter config
-     *
-     * @return array
-     */
-    public function getInterrupt()
-    {
-        return [
-            'hourly_ticker_interrupter' => [
-                'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => 'cron_hourly_ticker',
-            ],
-            'hourly_multiplexer_interrupter' => [
-                'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => 'hourly_multiplexer',
-            ],
-            'AmazoItemSearchTask_interrupter' => [
-                'class' => 'rollun\callback\Callback\Interruptor\Process',
-                'callbackService' => 'taskAmazonItemSearchCallback',
             ],
         ];
     }

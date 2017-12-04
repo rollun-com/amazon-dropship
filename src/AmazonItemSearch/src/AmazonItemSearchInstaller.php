@@ -12,6 +12,7 @@ use rollun\datastore\DataStore\Factory\DbTableAbstractFactory;
 use rollun\installer\Command;
 use rollun\installer\Install\InstallerAbstract;
 use rollun\amazonItemSearch\Callback\AmazonItemSearchTaskCallback;
+use rollun\callback\Callback\Factory\TickerAbstractFactory;
 
 class AmazonItemSearchInstaller extends InstallerAbstract
 {
@@ -64,6 +65,8 @@ class AmazonItemSearchInstaller extends InstallerAbstract
                         ],
                     ],
                 ],
+                'callback' => $this->getCallback(),
+                'interrupt' => $this->getInterrupt(),
             ];
 
             $this->consoleIO->write("<info>You have to override credentials</info>. Also you can override a <info>prices range: minimum and maximum prices</info>."
@@ -157,5 +160,61 @@ class AmazonItemSearchInstaller extends InstallerAbstract
         )];
 
         return $config;
+    }
+
+    /**
+     * Returns cron hourly task config
+     *
+     * 'min_multiplexer' => 'hourly_ticker_interrupter' => 'cron_hourly_ticker'
+     *      => 'hourly_multiplexer_interrupter' => 'hourly_multiplexer' => 'AmazonOrderToMegaplanDealTask_interrupter'
+     *
+     * @return array
+     */
+    public function getCallback()
+    {
+        return [
+            'min_multiplexer' => [
+                'class' => 'rollun\callback\Callback\Multiplexer',
+                'interrupters' => [
+                    'hourly_ticker_interrupter',
+                ],
+            ],
+            'cron_hourly_ticker' => [
+                'class' => 'rollun\callback\Callback\Ticker',
+                TickerAbstractFactory::KEY_TICKS_COUNT => 1,
+                TickerAbstractFactory::KEY_DELAY_MC => 0, // execute right away
+                'callback' => 'hourly_multiplexer_interrupter',
+            ],
+            'hourly_multiplexer' => [
+                'class' => 'rollun\callback\Callback\Multiplexer',
+                'interrupters' => [
+                    'AmazoItemSearchTask_interrupter',
+                ],
+            ],
+
+        ];
+    }
+
+    /**
+     * Returns cron interrupter config
+     *
+     * @return array
+     */
+    public function getInterrupt()
+    {
+        return [
+            'hourly_ticker_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'cron_hourly_ticker',
+            ],
+            'hourly_multiplexer_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'hourly_multiplexer',
+            ],
+            'AmazoItemSearchTask_interrupter' => [
+                'class' => 'rollun\callback\Callback\Interruptor\Process',
+                'callbackService' => 'taskAmazonItemSearchCallback',
+            ],
+        ];
     }
 }
